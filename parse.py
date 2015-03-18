@@ -12,14 +12,19 @@ dPosition = []
 
 with open(csv_file, 'rb') as f:
     reader = csv.reader(f)
+    reader.next()
     for row in reader:
         if (row[0] != ""):
-            CSV_DATA.append(row)
+            CSV_DATA.append([float(x) for x in row])
 
 for index, row in enumerate(CSV_DATA[1:]):
+    this_time = row[T] * (10 ** -3)
+    last_time = CSV_DATA[index - 1][T] * (10 ** -3)
     a_last = ((CSV_DATA[index - 1][A_X] ** 2) + (CSV_DATA[index - 1][A_Y] ** 2)) ** .5
     a_this = ((row[A_X] ** 2) + (row[A_Y] ** 2)) ** .5
-    dVelocity[index] = [ (a_this * row[T]) - (a_last * CSV_DATA[index - 1][T]) , row[T] ]
+    dVelocity.append([ (a_this * this_time) - (a_last * last_time) , this_time ])
 
-for vel in dVelocity:
-    print vel
+for index, row in enumerate(dVelocity[1:]):
+    dPosition.append((row[0] * row[1]) - (dVelocity[index - 1][0] * dVelocity[index - 1][1]))
+
+print sum(dPosition)
