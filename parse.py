@@ -21,12 +21,21 @@ CSV_DATA = [[0, 0, 0, 0, 0, 0, 0]]
 x_accelerations = [[0, 0]]
 y_accelerations = [[0, 0]]
 i = 0
+time = 0
 
 with open(csv_file, 'rb') as f:
     reader = csv.reader(f)
     reader.next()
     for row in reader:
         if (row[0] != ""):
-            CSV_DATA.append([float(x) for x in row])
+            time = float(row[T])*10**-3 # mS to S
+            x_accelerations.append([float(row[A_X]), time])
+            x_accelerations.append([float(row[A_Y]), time])
+            i += 1
+
+x_dis = calc_distance(x_accelerations)
+y_dis = calc_distance(y_accelerations)
+
+print (x_dis**2 + y_dis**2)**0.5
 
 
