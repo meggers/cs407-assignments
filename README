@@ -1,0 +1,23 @@
+Summary of our Process
+
+We wrote a few python scripts that allowed us to both visual the data as well 
+as perform discrete double integrations in one direction at a time. 
+
+Part 1
+To begin, we recognized that the acceleration direction of the phone would not 
+change after the turn (with respect to the phone itself), so we performed a double
+integration in both the Y direction. We found that both directions have
+a cumulative distance between 0-10m, X=8.5m. This concluded part 1.
+
+Part 2
+We utilized our calc_distance function written for part 1 and divided our Y
+distance by 5 (because we were given that there were 4 turns). After doing
+this, we looked at graphs for the gyroscope data to determine a threshold
+value for the start/end of a turn (this allowed us to ignore points where
+the gyroscope data was jittering around 0 - i.e. not turning) We put each
+of these chunks of turn data into an array and iterated over them, 
+incrementing the amount of radians turned by rad/s * delta time. We then
+matched the magnitudes of each result with the data from our graphs and 
+determined overall answers:
+
+Y = 8.5m, 90 degree right turn, 90 degree left turn, 45 left turn, 90 left turn

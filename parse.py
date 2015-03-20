@@ -5,6 +5,7 @@ import csv
 A_Y, G_Z, T = 1, 5, 6
 y_accelerations = [[0.0, 0.0]]
 
+# Calculate the distance in a specific direction by double integrating the data over time
 def calc_distance(data):
     a, v, t = 0, 0, 1
     delta_v = [[0, 0]]
@@ -72,14 +73,14 @@ def multiple_turn():
 
             this_turn = [[0.0, 0.0]]
 
-    radians = []
+    radians = [0.0, 0.0, 0.0, 0.0]
     for i, turn in enumerate(turn_data):
-        radians.append(0.0)
         for j, [gyro, time] in enumerate(turn):
             if (j == 0):
                 continue
 
-            radians[i] += gyro * (time - turn[j-1][1])
+            #print gyro * (time-turn[j-1][1])
+            radians[i] += (gyro * (time - turn[j-1][1]))
 
     print radians
 
