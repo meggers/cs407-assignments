@@ -2,6 +2,9 @@
 #csv module.
 import csv
 
+A_Y, G_Z, T = 1, 5, 6
+y_accelerations = [[0.0, 0.0]]
+
 def calc_distance(data):
     a, v, t = 0, 0, 1
     delta_v = [[0, 0]]
@@ -26,22 +29,59 @@ def calc_distance(data):
 
     return delta_p[-1]
 
-csv_file = "RightTurnData.csv"
+def right_turn():
+    csv_file = "RightTurnData.csv"
 
-A_Y, T = 1, 6
+    with open(csv_file, 'rb') as f:
+        reader = csv.reader(f)
+        reader.next()
+        for row in reader:
+            if (row[0] != ""):
+                time = float(row[T]) * (10**-3) # mS to S
+                y_accelerations.append( [float(row[A_Y]), time] )
 
-y_accelerations = [[0.0, 0.0]]
+    y_dist = calc_distance(y_accelerations)
+    print 'X is: %e' % (abs(y_dist / 2))
 
-with open(csv_file, 'rb') as f:
-    reader = csv.reader(f)
-    reader.next()
-    for row in reader:
-        if (row[0] != ""):
-            time = float(row[T]) * (10**-3) # mS to S
-            y_accelerations.append( [float(row[A_Y]), time] )
+def multiple_turn():
+    csv_file = "MultipleTurnData.csv"
+    turn_threshold = 0.08
+    z_gyroscope = [[0, 0]]
 
-y_dis = calc_distance(y_accelerations)
+    with open(csv_file, 'rb') as f:
+        reader = csv.reader(f)
+        reader.next()
+        for row in reader:
+            if (row[0] != ""):
+                time = float(row[T]) * (10**-3) # mS to S
+                y_accelerations.append( [float(row[A_Y]), time] )
+                z_gyroscope.append( [float(row[G_Z]), time] )
 
-print 'X is: %e' % (abs(y_dis / 2))
+    y_dist = calc_distance(y_accelerations)
+    print 'Y is: %e' % (abs(y_dist / 5))
 
+    last = 0.0
+    this_turn = [[0.0, 0.0]]
+    turn_data = []
+    for index, [gyro, time] in enumerate(z_gyroscope):
+        if (abs(gyro) > turn_threshold):
+            this_turn.append( [gyro, time] )
+        elif (this_turn[-1][1] == z_gyroscope[index - 1][1]):
+            if (len(this_turn) > 1):
+                turn_data.append(this_turn)
 
+            this_turn = [[0.0, 0.0]]
+
+    radians = []
+    for i, turn in enumerate(turn_data):
+        radians.append(0.0)
+        for j, [gyro, time] in enumerate(turn):
+            if (j == 0):
+                continue
+
+            radians[i] += gyro * (time - turn[j-1][1])
+
+    print radians
+
+right_turn()
+multiple_turn()
